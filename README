@@ -1,0 +1,20 @@
+基本使用方式：
+1. 导入course模块
+import course
+
+2. 下载验证码图片
+course.save_image()
+运行后将下载验证码图片到当前目录的yzm.jpeg文件中
+
+3. 登录选课系统
+course.login('you student number', 'password', 'varification code')
+若登录成功，返回Ture
+
+4. 得到选课信息
+courses = course.get_courses()
+返回课程列表，列表中的每项是一个课程字典对象
+
+5. 打印所有课程名称
+for c in courses:
+    print c['name']
+
