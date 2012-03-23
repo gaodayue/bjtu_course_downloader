@@ -7,6 +7,7 @@ DOMAIN = "http://202.112.154.91"
 VCODE_URL = DOMAIN + "/validateCodeAction.do"
 LOGIN_URL = DOMAIN + "/loginAction.do"
 COURSE_URL = DOMAIN + "/xskbAction.do?actionType=1"
+LOGOUT_URL = DOMAIN + "/logout.do"
 
 cookieJar = cookielib.CookieJar()
 opener= urllib2.build_opener(urllib2.HTTPCookieProcessor(cookieJar))
@@ -45,6 +46,13 @@ def login(sno, password, vcode):
     soup = BeautifulSoup(resp.read())
     return soup.originalEncoding == 'gb2312'
 
+def logout():
+    """
+    登出系统
+    """
+    params = {'loginType':'platformLogin'}
+    opener.open(LOGOUT_URL, urllib.urlencode(params))
+
 def get_courses():
     """
     返回所有课程信息的列表，必须在login()成功后调用
@@ -57,7 +65,7 @@ def get_courses():
         tds = tr.findAll("td")
         if len(tds) > 10:
             course = {}
-            course['id'] = tds[1].text      #课序号
+            course['cid'] = tds[1].text      #课程号
             course['name'] = tds[2].text    # 课程名
             course['order'] = tds[3].text   # 课序号
             course['credit'] = tds[4].text  # 学分 
@@ -80,4 +88,4 @@ def get_courses():
             time['where'] = tds[6].text    # 地点
             lastcourse['times'].append(time)
     return courses
-    
+

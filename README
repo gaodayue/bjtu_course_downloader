@@ -18,3 +18,5 @@ courses = course.get_courses()
 for c in courses:
     print c['name']
 
+6. 登出系统
+course.logout()
