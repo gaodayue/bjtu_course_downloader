@@ -89,7 +89,7 @@ def get_courses():
             course['name'] = tds[2].text    # 课程名
             course['order'] = tds[3].text   # 课序号
             course['credit'] = tds[4].text  # 学分 
-            course['teacher'] = tds[7].text # 教师
+            course['teacher'] = clean_teacher_name(tds[7].text) # 教师
             item = get_course_item(10) 
             course['items'] = [item]
             courses.append(course)
@@ -99,7 +99,20 @@ def get_courses():
             lastcourse['items'].append(item)
     return courses
 
+def clean_teacher_name(teacher):
+   """
+   返回清理后的教师姓名，如：
+   clean_teacher_name(u'李阳*') => u"李阳"
+   clean_teacher_name(u'李开复5*') => u"李开复"
+   """
+   return ''.join([x for x in teacher if not (x.isdigit() or x == '*')])
+ 
 def week_to_list(week):
+    """
+    将周次的描述文本转成python列表，如：
+    week_to_list('1-8周') => [1,2,3,4,5,6,7,8]
+    week_to_list('18周上') => [18]
+    """
     if '-' in week:
         start,end = week.split('-')
         return range(get_number(start), get_number(end) + 1)
