@@ -12,7 +12,26 @@ course.login('you student number', 'password', 'varification code')
 
 4. 得到选课信息
 courses = course.get_courses()
-返回课程列表，列表中的每项是一个课程字典对象
+返回课程列表，列表中的每项是一个课程字典对象，如：
+[{
+    'cid':'A0L216Q',
+    'name':'软件体系结构(双语)',
+    'order':'03',
+    'credit':'4.0', 'teacher':'王红亮',
+    'items':
+    [
+        {
+            'week':[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+            'd':1, 'session':[11, 12] ,'where':'YF208'
+        },
+        {
+            'week':[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+            'd':4, 'session':[11, 12] ,'where':'YF208'
+        }
+    ]
+},{课程2},...
+]
+
 
 5. 打印所有课程名称
 for c in courses:

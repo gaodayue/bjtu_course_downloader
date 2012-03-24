@@ -63,29 +63,55 @@ def get_courses():
     table = soup.findAll(attrs={"class":"displayTag"})[1]
     for tr in table.tbody.findAll("tr"):
         tds = tr.findAll("td")
+        def get_course_item(item_start_pos):
+            """
+            得到课程的时间地点信息
+            'item_start_pos': 该信息在表格中的开始位置
+            """
+            item = {}
+            info = [tds[x].text for x in \
+                    range(item_start_pos, item_start_pos + 7)]
+            # 1. 周次列表
+            # [1,3,5,7,9]表示第1,3,5,7,9周上课
+            item['week'] = week_to_list(info[0]) 
+            # 2. 星期几[1-7]
+            item['d'] = int(info[1])    
+            # 起始节次于持续节次
+            st, lt = int(info[2]), int(info[3])
+            # 3. 节次,[1,2]表示第一第二节上课
+            item['session'] = range(st, st + lt)
+            # 4. 地点
+            item['where'] = info[6]
+            return item
         if len(tds) > 10:
             course = {}
-            course['cid'] = tds[1].text      #课程号
+            course['cid'] = tds[1].text     #课程号
             course['name'] = tds[2].text    # 课程名
             course['order'] = tds[3].text   # 课序号
             course['credit'] = tds[4].text  # 学分 
-            course['t'] = tds[7].text       # 教师
-            time = {}
-            time['week'] = tds[10].text     # 周次
-            time['d'] = tds[11].text        # 星期几
-            time['st'] = tds[12].text       # 起始节次
-            time['lt'] = tds[13].text       # 持续节次
-            time['where'] = tds[16].text    # 地点
-            course['times'] = [time]        # 时间
+            course['teacher'] = tds[7].text # 教师
+            item = get_course_item(10) 
+            course['items'] = [item]
             courses.append(course)
         else:
             lastcourse = courses[-1]
-            time = {}
-            time['week'] = tds[0].text     # 周次
-            time['d'] = tds[1].text        # 星期几
-            time['st'] = tds[2].text       # 起始节次
-            time['lt'] = tds[3].text       # 持续节次
-            time['where'] = tds[6].text    # 地点
-            lastcourse['times'].append(time)
+            item = get_course_item(0)
+            lastcourse['items'].append(item)
     return courses
 
+def week_to_list(week):
+    if '-' in week:
+        start,end = week.split('-')
+        return range(get_number(start), get_number(end) + 1)
+    if ',' in week:
+        return [get_number(x) for x in week.split(',')]
+    return [get_number(week)]
+
+def get_number(text):
+    """
+    return number contained in 'text'
+    get_number(u'a12b') => 12
+    get_number(u'aa123bb456') => 123456
+    """
+    digits = [x for x in text if x.isdigit()]
+    return int(''.join(digits))
